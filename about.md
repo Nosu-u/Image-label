@@ -13,4 +13,4 @@ This mod's so simple that im truly shocked that no one had done this yet ngl, bu
 
 <co>***Midian-P on Devianart for the Ame-chan drawing that's on the logo and on the image below***</c>
 
-![Example](nosu.image_label/Example.png?width=300)
+![Example](resources/example.png?width=300)
