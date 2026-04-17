@@ -80,5 +80,17 @@
   			"min": 0,
   			"max": 360
   		}
-	}
+	},
+
+	"tags": [
+        	"content",
+        	"universal",
+        	"offline",
+		"interface",
+		"customization"
+    	]
+
+	"links": {
+        	"source": "https://github.com/Nosu-u/Image-label"
+    }
 }
