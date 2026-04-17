@@ -83,14 +83,14 @@
 	},
 
 	"tags": [
-        	"content",
-        	"universal",
-        	"offline",
+        "content",
+        "universal",
+        "offline",
 		"interface",
 		"customization"
-    	]
+    ],
 
 	"links": {
-        	"source": "https://github.com/Nosu-u/Image-label"
+        "source": "https://github.com/Nosu-u/Image-label"
     }
 }
