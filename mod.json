@@ -92,5 +92,11 @@
 
 	"links": {
         "source": "https://github.com/Nosu-u/Image-label"
-    }
+    },
+
+	"resources": {
+		"sprites": [
+			"resources/example.png"
+		]
+	}
 }
