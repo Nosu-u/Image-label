@@ -31,7 +31,7 @@ class $modify(ILUILayer, UILayer) {
 
 		auto path = Mod::get()->getSettingValue<std::filesystem::path>("image");
 		if (path.empty()) return true;
-		auto nimage = CCSprite::create(path.string().c_str());
+		auto nimage = CCSprite::create(utils::string::pathToString(path).c_str());
 
         nimage->setAnchorPoint({ 0.5f, 0.275f });
         nimage->setScale(scale);
@@ -91,9 +91,9 @@ $on_mod(Loaded) {
 
         // handle image swap
         auto currentPath = static_cast<CCString*>(spr->getUserObject("il-path"));
-        if (!currentPath || currentPath->getCString() != image.string()) {
+        if (!currentPath || currentPath->getCString() != utils::string::pathToString(image)) {
             auto parent = spr->getParent();
-            auto newSpr = CCSprite::create(image.string().c_str());
+            auto newSpr = CCSprite::create(utils::string::pathToString(image).c_str());
             if (!newSpr) return;
             newSpr->setAnchorPoint({ 0.5f, 0.275f });
             newSpr->setScale(scale);
@@ -101,7 +101,7 @@ $on_mod(Loaded) {
             newSpr->setOpacity((GLubyte)opacity);
             newSpr->setRotation(rotation);
             newSpr->setID("IL-image");
-            newSpr->setUserObject("il-path", CCString::create(image.string()));
+            newSpr->setUserObject("il-path", CCString::create(utils::string::pathToString(image)));
             spr->removeFromParentAndCleanup(true);
             parent->addChild(newSpr, above ? 1001 : 1);
         }
