@@ -1,5 +1,5 @@
 # Image Label
-### If you want to contact me for whatever reason, message me on Discord (nos.uu) or open an issue on Github
+### If you want to contact me for whatever reason, message me on Discord (nos.uu) or open an issue on [Github](https://github.com/Nosu-u/Image-label)
 
 Are you tired of be able to express yourself only with boring text labels? No? Uhh... this is kinda akward because thats the whole point of this mod, you know...
 
@@ -11,6 +11,6 @@ This mod's so simple that im truly shocked that no one had done this yet ngl, bu
 
 ## Credits
 
-<co>***Midian-P on Devianart for the Ame-chan drawing that's on the logo and on the image below***</c>
+<co>***[Midian-P](https://www.deviantart.com/midian-p/art/Walfas-Custom-Base-Ame-chan-NSO-1138284444) for the Ame-chan drawing that's on the logo, button and image below***</c>
 
 ![Example](nosu.image_label/example.png?width=300)

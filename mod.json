@@ -8,7 +8,7 @@
 	},
 	"id": "nosu.image_label",
 	"name": "Image Label",
-	"version": "v1.0.1",
+	"version": "v1.0.2",
 	"developer": "Nosu",
 	"description": "uhh yeah, that",
 	"settings": {
@@ -96,7 +96,8 @@
 
 	"resources": {
 		"sprites": [
-			"resources/example.png"
+			"resources/example.png",
+			"resources/ame.png"
 		]
 	}
 }

@@ -10,8 +10,12 @@ float posx;
 float posy;
 int opacity;
 int rotation;
-bool above;
 std::filesystem::path image;
+
+namespace Zorder {
+    constexpr int behind = 1;
+    constexpr int above = 1001;
+}
 
 void updateSettings() {
 	auto mod = Mod::get();
@@ -21,7 +25,6 @@ void updateSettings() {
     posy = mod->getSettingValue<float>("posy");
     opacity = mod->getSettingValue<int>("opacity");
     rotation = mod->getSettingValue<int>("rotation");
-    above = mod->getSettingValue<bool>("above");
     image = mod->getSettingValue<std::filesystem::path>("image");
 }
 
@@ -29,6 +32,7 @@ class $modify(ILUILayer, UILayer) {
     bool init(GJBaseGameLayer* level) {
         if (!UILayer::init(level)) return false;
 
+        auto mod = Mod::get();
 		auto path = Mod::get()->getSettingValue<std::filesystem::path>("image");
 		if (path.empty()) return true;
 		auto nimage = CCSprite::create(utils::string::pathToString(path).c_str());
@@ -38,8 +42,13 @@ class $modify(ILUILayer, UILayer) {
         nimage->setPosition({ posx, posy });
         nimage->setOpacity((GLubyte)opacity);
         nimage->setRotation(rotation);
-        nimage->setID("IL-image");
-		this->addChild(nimage, above ? 1001 : 1);
+        nimage->setID("nosu.image_label/image"_spr);
+
+		if (mod->getSettingValue<bool>("above")) {
+            this->addChild(nimage, Zorder::above);
+        } else {
+            this->addChild(nimage, Zorder::behind);
+        }
 
 		return true;
     }
@@ -53,6 +62,10 @@ class $modify(IL, PauseLayer) {
         
             auto menu = this->getChildByID("left-button-menu");
             auto sprite = CCSprite::createWithSpriteFrameName("GJ_plainBtn_001.png");
+            auto ame = CCSprite::create("ame.png"_spr);
+            ame->setPosition(sprite->getContentSize() / 2);
+            ame->setScale(0.2f);
+            sprite->addChild(ame);
             sprite->setScale(0.7f);
             auto btn = CCMenuItemSpriteExtra::create(
                 sprite,
@@ -60,7 +73,7 @@ class $modify(IL, PauseLayer) {
                 menu_selector(IL::onILSettings)
             );
 
-            btn->setID("IL-button");
+            btn->setID("nosu.image_label/settings-button");
             menu->addChild(btn);
             menu->updateLayout();
         }
@@ -76,18 +89,24 @@ $on_mod(Loaded) {
 	
 	listenForAllSettingChanges([](std::string_view key, std::shared_ptr<SettingV3> setting) {
 		updateSettings();
-		
+
+        auto mod = Mod::get();
         auto scene = CCDirector::sharedDirector()->getRunningScene();
         if (!scene) return;
         
-        auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("IL-image"));
+        auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("nosu.image_label/image"_spr));
         if (!spr) return;
         
         spr->setScale(scale);
         spr->setPosition({ posx, posy });
         spr->setOpacity((GLubyte)opacity);
         spr->setRotation(rotation);
-		spr->setZOrder(above ? 1001 : 1);
+
+		if (mod->getSettingValue<bool>("above")) {
+            spr->setZOrder(Zorder::above);
+        } else {
+            spr->setZOrder(Zorder::behind);
+        }
 
         // handle image swap
         auto currentPath = static_cast<CCString*>(spr->getUserObject("il-path"));
@@ -100,10 +119,15 @@ $on_mod(Loaded) {
             newSpr->setPosition({ posx, posy });
             newSpr->setOpacity((GLubyte)opacity);
             newSpr->setRotation(rotation);
-            newSpr->setID("IL-image");
+            newSpr->setID("nosu.image_label/image"_spr);
             newSpr->setUserObject("il-path", CCString::create(utils::string::pathToString(image)));
             spr->removeFromParentAndCleanup(true);
-            parent->addChild(newSpr, above ? 1001 : 1);
+
+            if (mod->getSettingValue<bool>("above")) {
+                parent->addChild(newSpr, Zorder::above);
+            } else {
+                parent->addChild(newSpr, Zorder::behind);
+            }
         }
 	});
 }
