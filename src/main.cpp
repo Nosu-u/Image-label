@@ -37,7 +37,7 @@ class $modify(ILUILayer, UILayer) {
         nimage->setPosition({ posx, posy });
         nimage->setOpacity((GLubyte)opacity);
         nimage->setRotation(rotation);
-        nimage->setID("nosu.image_label/image"_spr);
+        nimage->setID("il-image"_spr);
         this->addChild(nimage);
 
 		return true;
@@ -63,7 +63,7 @@ class $modify(IL, PauseLayer) {
                 menu_selector(IL::onILSettings)
             );
 
-            btn->setID("nosu.image_label/settings-button");
+            btn->setID("il-settings-button");
             menu->addChild(btn);
             menu->updateLayout();
         }
@@ -84,7 +84,7 @@ $on_mod(Loaded) {
         auto scene = CCDirector::sharedDirector()->getRunningScene();
         if (!scene) return;
         
-        auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("nosu.image_label/image"_spr));
+        auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("il-image"_spr));
         if (!spr) return;
         
         spr->setScale(scale);
@@ -103,7 +103,7 @@ $on_mod(Loaded) {
             newSpr->setPosition({ posx, posy });
             newSpr->setOpacity((GLubyte)opacity);
             newSpr->setRotation(rotation);
-            newSpr->setID("nosu.image_label/image"_spr);
+            newSpr->setID("il-image"_spr);
             newSpr->setUserObject("il-path", CCString::create(utils::string::pathToString(image)));
             spr->removeFromParentAndCleanup(true);
             parent->addChild(newSpr);

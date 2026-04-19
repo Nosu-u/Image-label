@@ -1,3 +1,6 @@
+# 1.0.4
+- Changed the node IDs...
+
 # 1.0.3
 - Removed the "Above UI" setting...
 
