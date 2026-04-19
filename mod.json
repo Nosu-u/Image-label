@@ -8,9 +8,9 @@
 	},
 	"id": "nosu.image_label",
 	"name": "Image Label",
-	"version": "v1.0.2",
+	"version": "v1.0.3",
 	"developer": "Nosu",
-	"description": "uhh yeah, that",
+	"description": "Add whatever image you want while playing",
 	"settings": {
     	"image": {
     		"name": "Image (gif, png, jpg, jpeg, webp)",
@@ -24,13 +24,6 @@
 	    	"description": "Show a button to change the settings in the pause menu",
 	    	"type": "bool",
 	    	"default": true
-  		},
-
-		"above": {
-    		"name": "Above the ui",
-	    	"description": "Whether you want your image to be above the ui or not",
-	    	"type": "bool",
-	    	"default": false
   		},
 
 		"scale": {

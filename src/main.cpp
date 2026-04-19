@@ -12,11 +12,6 @@ int opacity;
 int rotation;
 std::filesystem::path image;
 
-namespace Zorder {
-    constexpr int behind = 1;
-    constexpr int above = 1001;
-}
-
 void updateSettings() {
 	auto mod = Mod::get();
 
@@ -43,12 +38,7 @@ class $modify(ILUILayer, UILayer) {
         nimage->setOpacity((GLubyte)opacity);
         nimage->setRotation(rotation);
         nimage->setID("nosu.image_label/image"_spr);
-
-		if (mod->getSettingValue<bool>("above")) {
-            this->addChild(nimage, Zorder::above);
-        } else {
-            this->addChild(nimage, Zorder::behind);
-        }
+        this->addChild(nimage);
 
 		return true;
     }
@@ -102,12 +92,6 @@ $on_mod(Loaded) {
         spr->setOpacity((GLubyte)opacity);
         spr->setRotation(rotation);
 
-		if (mod->getSettingValue<bool>("above")) {
-            spr->setZOrder(Zorder::above);
-        } else {
-            spr->setZOrder(Zorder::behind);
-        }
-
         // handle image swap
         auto currentPath = static_cast<CCString*>(spr->getUserObject("il-path"));
         if (!currentPath || currentPath->getCString() != utils::string::pathToString(image)) {
@@ -122,12 +106,7 @@ $on_mod(Loaded) {
             newSpr->setID("nosu.image_label/image"_spr);
             newSpr->setUserObject("il-path", CCString::create(utils::string::pathToString(image)));
             spr->removeFromParentAndCleanup(true);
-
-            if (mod->getSettingValue<bool>("above")) {
-                parent->addChild(newSpr, Zorder::above);
-            } else {
-                parent->addChild(newSpr, Zorder::behind);
-            }
+            parent->addChild(newSpr);
         }
 	});
 }
