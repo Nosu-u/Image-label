@@ -8,7 +8,7 @@
 	},
 	"id": "nosu.image_label",
 	"name": "Image Label",
-	"version": "v1.0.4",
+	"version": "v1.1.0",
 	"developer": "Nosu",
 	"description": "Add whatever image you want while playing",
 	"settings": {
@@ -16,8 +16,17 @@
     		"name": "Image (gif, png, jpg, jpeg, webp)",
 	    	"description": "Your image. Whatever size or resolution you want",
 	    	"type": "file",
-	    	"default": "None Selected"
-  		},
+	    	"default": "Please pick an image file.",
+			"control": {
+        		"dialog": "open",
+        		"filters": [
+            		{
+						"files": ["*.gif", "*.png", "*.jpg", "*.jpeg", "*.webp"],
+						"description": "Image files"
+					}
+				]
+			}
+    	},
 
 		"pbutton": {
     		"name": "Settings in pause menu",
@@ -31,36 +40,32 @@
   			"description": "The scale you want your image to be",
   			"type": "float",
   			"default": 0.3,
-  			"min": 0.1,
-  			"max": 10,
-  			"control": {
-  			    "slider": true
-  			}
+  			"min": 0.1
   		},
 
 		"posx": {
-  			"name": "Position (X)",
-  			"description": "How far right or left you want your image to be",
-  			"type": "float",
-  			"default": 550,
-  			"min": -1000,
-  			"max": 1000
-  		},
-
+    		"name": "Position (X)",
+    		"description": "Horizontal position. 0% = left border, 100% = right border",
+    		"type": "float",
+    		"min": 0,
+    		"max": 100,
+    		"default": 95
+		},
+		
 		"posy": {
-  			"name": "Position (Y)",
-  			"description": "How high you want your image to be",
-  			"type": "float",
-  			"default": 280,
-  			"min": -500,
-  			"max": 500
-  		},
+    		"name": "Position (Y)", 
+    		"description": "Vertical position. 0% = bottom border, 100% = top border",
+    		"type": "float",
+    		"min": 0,
+    		"max": 100,
+    		"default": 80
+		},
 
 		"opacity": {
   			"name": "Opacity",
   			"description": "How transparent you want your image to be",
   			"type": "int",
-  			"default": 127,
+  			"default": 150,
   			"min": 0,
   			"max": 255
   		},
@@ -69,9 +74,7 @@
   			"name": "Rotation",
   			"description": "How many degrees you want your image to be rotated",
   			"type": "int",
-  			"default": 0,
-  			"min": 0,
-  			"max": 360
+  			"default": 0
   		}
 	},
 
@@ -83,14 +86,18 @@
 		"customization"
     ],
 
+	"dependencies": {
+		"geode.node-ids": ">=1.22.0",
+		"prevter.imageplus": ">=1.0.0"
+	},
+
 	"links": {
         "source": "https://github.com/Nosu-u/Image-label"
     },
 
 	"resources": {
 		"sprites": [
-			"resources/example.png",
-			"resources/ame.png"
+			"resources/*.png"
 		]
 	}
 }

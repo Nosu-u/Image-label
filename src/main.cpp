@@ -28,13 +28,14 @@ class $modify(ILUILayer, UILayer) {
         if (!UILayer::init(level)) return false;
 
         auto mod = Mod::get();
+        auto winSize = CCDirector::get()->getWinSize();
 		auto path = Mod::get()->getSettingValue<std::filesystem::path>("image");
 		if (path.empty()) return true;
 		auto nimage = CCSprite::create(utils::string::pathToString(path).c_str());
 
         nimage->setAnchorPoint({ 0.5f, 0.275f });
         nimage->setScale(scale);
-        nimage->setPosition({ posx, posy });
+        nimage->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
         nimage->setOpacity((GLubyte)opacity);
         nimage->setRotation(rotation);
         nimage->setID("il-image"_spr);
@@ -81,6 +82,7 @@ $on_mod(Loaded) {
 		updateSettings();
 
         auto mod = Mod::get();
+        auto winSize = CCDirector::get()->getWinSize();
         auto scene = CCDirector::sharedDirector()->getRunningScene();
         if (!scene) return;
         
@@ -88,7 +90,7 @@ $on_mod(Loaded) {
         if (!spr) return;
         
         spr->setScale(scale);
-        spr->setPosition({ posx, posy });
+        spr->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
         spr->setOpacity((GLubyte)opacity);
         spr->setRotation(rotation);
 
