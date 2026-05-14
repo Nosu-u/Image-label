@@ -12,6 +12,6 @@ This mod's so simple that im truly shocked that no one had done this yet ngl, bu
 ## Credits
 
 - <co>***[Midian-P](https://www.deviantart.com/midian-p/art/Walfas-Custom-Base-Ame-chan-NSO-1138284444) for the Ame-chan drawing that's on the logo, button and image below***</c>
-- <cr>***[MalikHw47](https://www.youtube.com/@MalikHw47/) for image swap on input!***</cr>
+- <cr>***[MalikHw47](https://www.youtube.com/@MalikHw47/) for image swap on input implementation!***</cr>
 
 ![Example](nosu.image_label/example.png?width=300)
