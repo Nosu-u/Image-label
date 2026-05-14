@@ -2,6 +2,7 @@
 #include <Geode/ui/GeodeUI.hpp>
 #include <Geode/modify/UILayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
+#include <Geode/modify/PlayLayer.hpp>
 
 using namespace geode::prelude;
 
@@ -12,6 +13,13 @@ int opacity;
 int rotation;
 std::filesystem::path image;
 
+float inputScale;
+float inputPosx;
+float inputPosy;
+int inputOpacity;
+int inputRotation;
+std::filesystem::path inputImage;
+
 void updateSettings() {
 	auto mod = Mod::get();
 
@@ -21,6 +29,13 @@ void updateSettings() {
     opacity = mod->getSettingValue<int>("opacity");
     rotation = mod->getSettingValue<int>("rotation");
     image = mod->getSettingValue<std::filesystem::path>("image");
+
+    inputScale = mod->getSettingValue<float>("input-scale");
+    inputPosx = mod->getSettingValue<float>("input-posx");
+    inputPosy = mod->getSettingValue<float>("input-posy");
+    inputOpacity = mod->getSettingValue<int>("input-opacity");
+    inputRotation = mod->getSettingValue<int>("input-rotation");
+    inputImage = mod->getSettingValue<std::filesystem::path>("input-image");
 }
 
 class $modify(ILUILayer, UILayer) {
@@ -43,6 +58,74 @@ class $modify(ILUILayer, UILayer) {
 
 		return true;
     }
+};
+
+class $modify(ILPlayLayer, PlayLayer) {
+	struct Fields {
+		bool m_lastInputState = false;
+	};
+
+	void update(float dt) {
+		PlayLayer::update(dt);
+
+		// check if input image feature is enabled
+		if (!Mod::get()->getSettingValue<bool>("enable-input")) return;
+
+		// check if we have both images configured
+		if (image.empty() || inputImage.empty()) return;
+
+		auto scene = CCDirector::sharedDirector()->getRunningScene();
+		if (!scene) return;
+
+		auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("il-image"_spr));
+		if (!spr) return;
+
+		// check if player is holding jump
+		bool isHoldingJump = false;
+		auto player1 = m_player1;
+		auto player2 = m_player2;
+
+		if (player1 && !player1->m_isDead) {
+			// check if player is holding jump by checking if they're in the air and not on ground
+			// or by checking the jump buffer state
+			isHoldingJump = player1->m_jumpBuffered || player1->m_hasJumped;
+		}
+
+		// only update if state changed
+		if (isHoldingJump != m_fields->m_lastInputState) {
+			m_fields->m_lastInputState = isHoldingJump;
+
+			auto winSize = CCDirector::get()->getWinSize();
+			
+			if (isHoldingJump) {
+				// swap to input image
+				auto newPath = utils::string::pathToString(inputImage);
+				auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str());
+				if (newTexture) {
+					spr->setTexture(newTexture);
+					auto size = newTexture->getContentSize();
+					spr->setTextureRect(CCRect(0, 0, size.width, size.height));
+					spr->setScale(inputScale);
+					spr->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
+					spr->setOpacity((GLubyte)inputOpacity);
+					spr->setRotation(inputRotation);
+				}
+			} else {
+				// swap back to original image
+				auto newPath = utils::string::pathToString(image);
+				auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str());
+				if (newTexture) {
+					spr->setTexture(newTexture);
+					auto size = newTexture->getContentSize();
+					spr->setTextureRect(CCRect(0, 0, size.width, size.height));
+					spr->setScale(scale);
+					spr->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
+					spr->setOpacity((GLubyte)opacity);
+					spr->setRotation(rotation);
+				}
+			}
+		}
+	}
 };
 
 class $modify(IL, PauseLayer) {
