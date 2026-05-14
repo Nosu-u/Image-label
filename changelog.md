@@ -1,3 +1,6 @@
+# 1.2.0
+- Can customize to another picture when you hold your mouse! (by [MalikHw47](https://www.youtube.com/@MalikHw47/))
+
 # 1.1.0
 - Changed the position system to be percentage based
 - Changed and added a bunch of things for better safety and compatibility
