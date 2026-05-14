@@ -86,9 +86,8 @@ class $modify(ILPlayLayer, PlayLayer) {
 		auto player2 = m_player2;
 
 		if (player1 && !player1->m_isDead) {
-			// check if player is holding jump by checking if they're in the air and not on ground
-			// or by checking the jump buffer state
-			isHoldingJump = player1->m_jumpBuffered || player1->m_hasJumped;
+			// check if player is holding jump by checking jump buffer or if not on ground
+			isHoldingJump = player1->m_jumpBuffered || (!player1->m_isOnGround && player1->m_hasEverJumped);
 		}
 
 		// only update if state changed
@@ -100,7 +99,7 @@ class $modify(ILPlayLayer, PlayLayer) {
 			if (isHoldingJump) {
 				// swap to input image
 				auto newPath = utils::string::pathToString(inputImage);
-				auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str());
+				auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str(), false);
 				if (newTexture) {
 					spr->setTexture(newTexture);
 					auto size = newTexture->getContentSize();
@@ -113,7 +112,7 @@ class $modify(ILPlayLayer, PlayLayer) {
 			} else {
 				// swap back to original image
 				auto newPath = utils::string::pathToString(image);
-				auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str());
+				auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str(), false);
 				if (newTexture) {
 					spr->setTexture(newTexture);
 					auto size = newTexture->getContentSize();
