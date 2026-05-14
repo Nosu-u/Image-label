@@ -1,3 +1,8 @@
+![mod ver](https://api.geode-sdk.org/v1/mods/nosu.image_label/status_badge?stat=version)
+![downloads](https://api.geode-sdk.org/v1/mods/nosu.image_label/status_badge?stat=downloads)
+![gd ver](https://api.geode-sdk.org/v1/mods/nosu.image_label/status_badge?stat=gd_version)
+![gode ver](https://api.geode-sdk.org/v1/mods/nosu.image_label/status_badge?stat=geode_version)
+
 # Image Label
 <img src="logo.png" width="150" alt="the mod's logo" />
 
@@ -12,8 +17,8 @@ You can fully customize the image you want to add on the mod settings btw, just 
 This mod's so simple that im truly shocked that no one had done this yet ngl, but here we are lol.
 
 ## Credits
-
-***[Midian-P](https://www.deviantart.com/midian-p/art/Walfas-Custom-Base-Ame-chan-NSO-1138284444) for the Ame-chan drawing that's on the logo, button and image below***
+- <cr>***[MalikHw47](https://www.youtube.com/@MalikHw47/) for image swap on input implementation!***</cr>
+- ***[Midian-P](https://www.deviantart.com/midian-p/art/Walfas-Custom-Base-Ame-chan-NSO-1138284444) for the Ame-chan drawing that's on the logo, button and image below***
 
 <img src="example.png" width="600" alt="example" />
 
