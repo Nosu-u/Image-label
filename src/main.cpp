@@ -2,7 +2,7 @@
 #include <Geode/ui/GeodeUI.hpp>
 #include <Geode/modify/UILayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
-#include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/PlayerObject.hpp>
 
 using namespace geode::prelude;
 
@@ -20,6 +20,9 @@ int inputOpacity;
 int inputRotation;
 std::filesystem::path inputImage;
 
+// track if player is holding jump
+static bool s_isHoldingJump = false;
+
 void updateSettings() {
 	auto mod = Mod::get();
 
@@ -36,6 +39,50 @@ void updateSettings() {
     inputOpacity = mod->getSettingValue<int>("input-opacity");
     inputRotation = mod->getSettingValue<int>("input-rotation");
     inputImage = mod->getSettingValue<std::filesystem::path>("input-image");
+}
+
+void updateImageState() {
+	// check if input image feature is enabled
+	if (!Mod::get()->getSettingValue<bool>("enable-input")) return;
+
+	// check if we have both images configured
+	if (image.empty() || inputImage.empty()) return;
+
+	auto scene = CCDirector::sharedDirector()->getRunningScene();
+	if (!scene) return;
+
+	auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("il-image"_spr));
+	if (!spr) return;
+
+	auto winSize = CCDirector::get()->getWinSize();
+	
+	if (s_isHoldingJump) {
+		// swap to input image
+		auto newPath = utils::string::pathToString(inputImage);
+		auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str(), false);
+		if (newTexture) {
+			spr->setTexture(newTexture);
+			auto size = newTexture->getContentSize();
+			spr->setTextureRect(CCRect(0, 0, size.width, size.height));
+			spr->setScale(inputScale);
+			spr->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
+			spr->setOpacity((GLubyte)inputOpacity);
+			spr->setRotation(inputRotation);
+		}
+	} else {
+		// swap back to original image
+		auto newPath = utils::string::pathToString(image);
+		auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str(), false);
+		if (newTexture) {
+			spr->setTexture(newTexture);
+			auto size = newTexture->getContentSize();
+			spr->setTextureRect(CCRect(0, 0, size.width, size.height));
+			spr->setScale(scale);
+			spr->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
+			spr->setOpacity((GLubyte)opacity);
+			spr->setRotation(rotation);
+		}
+	}
 }
 
 class $modify(ILUILayer, UILayer) {
@@ -60,70 +107,29 @@ class $modify(ILUILayer, UILayer) {
     }
 };
 
-class $modify(ILPlayLayer, PlayLayer) {
-	struct Fields {
-		bool m_lastInputState = false;
-	};
-
-	void update(float dt) {
-		PlayLayer::update(dt);
-
-		// check if input image feature is enabled
-		if (!Mod::get()->getSettingValue<bool>("enable-input")) return;
-
-		// check if we have both images configured
-		if (image.empty() || inputImage.empty()) return;
-
-		auto scene = CCDirector::sharedDirector()->getRunningScene();
-		if (!scene) return;
-
-		auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("il-image"_spr));
-		if (!spr) return;
-
-		// check if player is holding jump
-		bool isHoldingJump = false;
-		auto player1 = m_player1;
-		auto player2 = m_player2;
-
-		if (player1 && !player1->m_isDead) {
-			// check if player is holding jump by checking jump buffer or if not on ground
-			isHoldingJump = player1->m_jumpBuffered || (!player1->m_isOnGround && player1->m_hasEverJumped);
+class $modify(ILPlayerObject, PlayerObject) {
+	bool pushButton(PlayerButton btn) {
+		bool result = PlayerObject::pushButton(btn);
+		
+		// only track jump button
+		if (btn == PlayerButton::Jump) {
+			s_isHoldingJump = true;
+			updateImageState();
 		}
+		
+		return result;
+	}
 
-		// only update if state changed
-		if (isHoldingJump != m_fields->m_lastInputState) {
-			m_fields->m_lastInputState = isHoldingJump;
-
-			auto winSize = CCDirector::get()->getWinSize();
-			
-			if (isHoldingJump) {
-				// swap to input image
-				auto newPath = utils::string::pathToString(inputImage);
-				auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str(), false);
-				if (newTexture) {
-					spr->setTexture(newTexture);
-					auto size = newTexture->getContentSize();
-					spr->setTextureRect(CCRect(0, 0, size.width, size.height));
-					spr->setScale(inputScale);
-					spr->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
-					spr->setOpacity((GLubyte)inputOpacity);
-					spr->setRotation(inputRotation);
-				}
-			} else {
-				// swap back to original image
-				auto newPath = utils::string::pathToString(image);
-				auto newTexture = CCTextureCache::sharedTextureCache()->addImage(newPath.c_str(), false);
-				if (newTexture) {
-					spr->setTexture(newTexture);
-					auto size = newTexture->getContentSize();
-					spr->setTextureRect(CCRect(0, 0, size.width, size.height));
-					spr->setScale(scale);
-					spr->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
-					spr->setOpacity((GLubyte)opacity);
-					spr->setRotation(rotation);
-				}
-			}
+	bool releaseButton(PlayerButton btn) {
+		bool result = PlayerObject::releaseButton(btn);
+		
+		// only track jump button
+		if (btn == PlayerButton::Jump) {
+			s_isHoldingJump = false;
+			updateImageState();
 		}
+		
+		return result;
 	}
 };
 
