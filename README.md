@@ -1,8 +1,3 @@
-![mod ver](https://api.geode-sdk.org/v1/mods/nosu.image_label/status_badge?stat=version)
-![downloads](https://api.geode-sdk.org/v1/mods/nosu.image_label/status_badge?stat=downloads)
-![gd ver](https://api.geode-sdk.org/v1/mods/nosu.image_label/status_badge?stat=gd_version)
-![gode ver](https://api.geode-sdk.org/v1/mods/nosu.image_label/status_badge?stat=geode_version)
-
 # Image Label
 <img src="logo.png" width="150" alt="the mod's logo" />
 
@@ -10,15 +5,15 @@
 
 Are you tired of be able to express yourself only with boring text labels? No? Uhh... this is kinda akward because thats the whole point of this mod, you know...
 
-Well... with this mod you can add whatever image you want to the screen while you're playing, just like you do with labels on mod menus.
+Well... with this mod you can add whatever image (or GIF) you want to the screen while you're playing, just like you do with labels on mod menus.
 
 You can fully customize the image you want to add on the mod settings btw, just in case you miss it.
 
 This mod's so simple that im truly shocked that no one had done this yet ngl, but here we are lol.
 
 ## Credits
-- <cr>***[MalikHw47](https://www.youtube.com/@MalikHw47/) for image swap on input implementation!***</cr>
 - ***[Midian-P](https://www.deviantart.com/midian-p/art/Walfas-Custom-Base-Ame-chan-NSO-1138284444) for the Ame-chan drawing that's on the logo, button and image below***
+- ***[MalikHw47](https://www.youtube.com/@MalikHw47/) for the image change on input idea***
 
 <img src="example.png" width="600" alt="example" />
 

@@ -1,5 +1,5 @@
 {
-	"geode": "5.7.0",
+	"geode": "5.7.1",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -8,15 +8,17 @@
 	},
 	"id": "nosu.image_label",
 	"name": "Image Label",
-	"version": "v1.2.0",
-	"developers": ["Nosu", "MalikHw47"],
+	"version": "v1.2.1",
+	"developers": ["Nosu"],
 	"description": "Add whatever image you want while playing",
+	"dependencies": {
+		"geode.node-ids": ">=1.22.0",
+		"prevter.imageplus": {
+			"version": ">=v1.0.0",
+            "required": true
+		}
+	},
 	"settings": {
-		"title-main": {
-			"name": "Main Image",
-			"type": "title"
-		},
-
     	"image": {
     		"name": "Image (gif, png, jpg, jpeg, webp)",
 	    	"description": "Your image. Whatever size or resolution you want",
@@ -82,21 +84,16 @@
   			"default": 0
   		},
 
-		"title-input": {
-			"name": "Input Image (Change on input)",
-			"type": "title"
-		},
-
 		"enable-input": {
-			"name": "Enable Input Image (optional)",
-			"description": "Show alternate image while holding jump",
+			"name": "Enable Input Image",
+			"description": "Show a different image while clicking",
 			"type": "bool",
 			"default": false
 		},
 
 		"input-image": {
     		"name": "Input Image (gif, png, jpg, jpeg, webp)",
-	    	"description": "Image shown while holding jump input",
+	    	"description": "Whatever size or resolution you want",
 	    	"type": "file",
 	    	"default": "Please pick an image file.",
 			"control": {
@@ -160,11 +157,6 @@
 		"interface",
 		"customization"
     ],
-
-	"dependencies": {
-		"geode.node-ids": ">=1.22.0",
-		"prevter.imageplus": ">=1.0.0"
-	},
 
 	"links": {
         "source": "https://github.com/Nosu-u/Image-label"

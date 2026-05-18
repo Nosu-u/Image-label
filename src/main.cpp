@@ -18,10 +18,8 @@ float inputPosx;
 float inputPosy;
 int inputOpacity;
 int inputRotation;
+bool shouldInput;
 std::filesystem::path inputImage;
-
-// track if player is holding jump
-static bool s_isHoldingJump = false;
 
 void updateSettings() {
 	auto mod = Mod::get();
@@ -39,42 +37,7 @@ void updateSettings() {
     inputOpacity = mod->getSettingValue<int>("input-opacity");
     inputRotation = mod->getSettingValue<int>("input-rotation");
     inputImage = mod->getSettingValue<std::filesystem::path>("input-image");
-}
-
-void updateImageState() {
-	// check if input image feature is enabled
-	if (!Mod::get()->getSettingValue<bool>("enable-input")) return;
-
-	// check if we have both images configured
-	if (image.empty() || inputImage.empty()) return;
-
-	auto scene = CCDirector::sharedDirector()->getRunningScene();
-	if (!scene) return;
-
-	auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("il-image"_spr));
-	if (!spr) return;
-
-	auto winSize = CCDirector::get()->getWinSize();
-	auto wantPath = utils::string::pathToString(s_isHoldingJump ? inputImage : image);
-	float wantScale = s_isHoldingJump ? inputScale : scale;
-	float wantPx = s_isHoldingJump ? inputPosx : posx;
-	float wantPy = s_isHoldingJump ? inputPosy : posy;
-	int wantOpacity = s_isHoldingJump ? inputOpacity : opacity;
-	int wantRotation = s_isHoldingJump ? inputRotation : rotation;
-
-	auto parent = spr->getParent();
-	int zOrder = spr->getZOrder();
-	spr->removeFromParentAndCleanup(true);
-
-	auto newSpr = CCSprite::create(wantPath.c_str());
-	if (!newSpr) return;
-	newSpr->setAnchorPoint({ 0.5f, 0.275f });
-	newSpr->setScale(wantScale);
-	newSpr->setPosition({ (wantPx / 100.f) * winSize.width, (wantPy / 100.f) * winSize.height });
-	newSpr->setOpacity((GLubyte)wantOpacity);
-	newSpr->setRotation(wantRotation);
-	newSpr->setID("il-image"_spr);
-	parent->addChild(newSpr, zOrder);
+    shouldInput = mod->getSettingValue<bool>("enable-input");
 }
 
 class $modify(ILUILayer, UILayer) {
@@ -83,45 +46,70 @@ class $modify(ILUILayer, UILayer) {
 
         auto mod = Mod::get();
         auto winSize = CCDirector::get()->getWinSize();
-		auto path = Mod::get()->getSettingValue<std::filesystem::path>("image");
+		auto path = mod->getSettingValue<std::filesystem::path>("image");
 		if (path.empty()) return true;
-		auto nimage = CCSprite::create(utils::string::pathToString(path).c_str());
+        auto npath = mod->getSettingValue<std::filesystem::path>("input-image");
+        if (npath.empty()) return true;
+		auto normalimage = CCSprite::create(utils::string::pathToString(path).c_str());
+        auto nimage = CCSprite::create(utils::string::pathToString(npath).c_str());
 
-        nimage->setAnchorPoint({ 0.5f, 0.275f });
-        nimage->setScale(scale);
-        nimage->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
-        nimage->setOpacity((GLubyte)opacity);
-        nimage->setRotation(rotation);
-        nimage->setID("il-image"_spr);
-        this->addChild(nimage);
+        normalimage->setAnchorPoint({ 0.5f, 0.275f });
+        normalimage->setScale(scale);
+        normalimage->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
+        normalimage->setOpacity((GLubyte)opacity);
+        normalimage->setRotation(rotation);
+        normalimage->setID("il-image"_spr);
+        this->addChild(normalimage);
 
+        if (mod->getSettingValue<bool>("enable-input")) {
+            nimage->setAnchorPoint({ 0.5f, 0.275f });
+	        nimage->setScale(inputScale);
+	        nimage->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
+	        nimage->setOpacity((GLubyte)inputOpacity);
+	        nimage->setRotation(inputRotation);
+	        nimage->setID("il-input-image"_spr);
+            nimage->setVisible(false);
+            this->addChild(nimage);
+        }
 		return true;
     }
 };
 
 class $modify(ILPlayerObject, PlayerObject) {
 	bool pushButton(PlayerButton btn) {
-		bool result = PlayerObject::pushButton(btn);
+		PlayerObject::pushButton(btn);
 		
-		// only track jump button
-		if (btn == PlayerButton::Jump) {
-			s_isHoldingJump = true;
-			updateImageState();
+		if (btn == PlayerButton::Jump && Mod::get()->getSettingValue<bool>("enable-input") && PlayLayer::get()) {
+			auto normalimage = PlayLayer::get()->m_uiLayer->getChildByIDRecursive("il-image"_spr);
+            auto nimage = PlayLayer::get()->m_uiLayer->getChildByIDRecursive("il-input-image"_spr);
+
+            if (normalimage && nimage) {
+                normalimage->setVisible(false);
+                normalimage->pauseSchedulerAndActions(); // so it wont continue playing if its a gif (idk how to check and i dont think it matters tbh)
+                nimage->setVisible(true);
+                nimage->resumeSchedulerAndActions();
+            }
 		}
 		
-		return result;
+		return true;
 	}
 
 	bool releaseButton(PlayerButton btn) {
-		bool result = PlayerObject::releaseButton(btn);
+		PlayerObject::releaseButton(btn);
 		
-		// only track jump button
-		if (btn == PlayerButton::Jump) {
-			s_isHoldingJump = false;
-			updateImageState();
+		if (btn == PlayerButton::Jump && Mod::get()->getSettingValue<bool>("enable-input") && PlayLayer::get()) {
+			auto normalimage = PlayLayer::get()->m_uiLayer->getChildByIDRecursive("il-image"_spr);
+            auto nimage = PlayLayer::get()->m_uiLayer->getChildByIDRecursive("il-input-image"_spr);
+
+            if (normalimage && nimage) {
+                normalimage->setVisible(true);
+                normalimage->resumeSchedulerAndActions();
+                nimage->setVisible(false);
+                nimage->pauseSchedulerAndActions(); // so it wont continue playing if its a gif (idk how to check and i dont think it matters tbh)
+            }
 		}
 		
-		return result;
+		return true;
 	}
 };
 
@@ -130,7 +118,6 @@ class $modify(IL, PauseLayer) {
         PauseLayer::customSetup();
 
         if (Mod::get()->getSettingValue<bool>("pbutton")) {
-        
             auto menu = this->getChildByID("left-button-menu");
             auto sprite = CCSprite::createWithSpriteFrameName("GJ_plainBtn_001.png");
             auto ame = CCSprite::create("ame.png"_spr);
@@ -163,21 +150,21 @@ $on_mod(Loaded) {
 
         auto mod = Mod::get();
         auto winSize = CCDirector::get()->getWinSize();
-        auto scene = CCDirector::sharedDirector()->getRunningScene();
-        if (!scene) return;
+        auto normalimage = static_cast<CCSprite*>(PlayLayer::get()->m_uiLayer->getChildByIDRecursive("il-image"_spr));
+        if (!normalimage) return;
+        auto nimage = static_cast<CCSprite*>(PlayLayer::get()->m_uiLayer->getChildByIDRecursive("il-input-image"_spr));
+        if (!nimage) return;
         
-        auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("il-image"_spr));
-        if (!spr) return;
-        
-        spr->setScale(scale);
-        spr->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
-        spr->setOpacity((GLubyte)opacity);
-        spr->setRotation(rotation);
+        normalimage->setScale(scale);
+        normalimage->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
+        normalimage->setOpacity((GLubyte)opacity);
+        normalimage->setRotation(rotation);
 
         // handle image swap
-        auto currentPath = static_cast<CCString*>(spr->getUserObject("il-path"));
+        auto currentPath = static_cast<CCString*>(normalimage->getUserObject("il-path"));
+        auto currentnPath = static_cast<CCString*>(nimage->getUserObject("il-input-path"));
         if (!currentPath || currentPath->getCString() != utils::string::pathToString(image)) {
-            auto parent = spr->getParent();
+            auto parent = normalimage->getParent();
             auto newSpr = CCSprite::create(utils::string::pathToString(image).c_str());
             if (!newSpr) return;
             newSpr->setAnchorPoint({ 0.5f, 0.275f });
@@ -187,8 +174,24 @@ $on_mod(Loaded) {
             newSpr->setRotation(rotation);
             newSpr->setID("il-image"_spr);
             newSpr->setUserObject("il-path", CCString::create(utils::string::pathToString(image)));
-            spr->removeFromParentAndCleanup(true);
+            normalimage->removeFromParentAndCleanup(true);
             parent->addChild(newSpr);
+        }
+
+        if (!currentnPath || currentnPath->getCString() != utils::string::pathToString(inputImage)) {
+            auto parent = nimage->getParent();
+            auto newiSpr = CCSprite::create(utils::string::pathToString(inputImage).c_str());
+            if (!newiSpr) return;
+            newiSpr->setAnchorPoint({ 0.5f, 0.275f });
+            newiSpr->setScale(inputScale);
+            newiSpr->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
+            newiSpr->setOpacity((GLubyte)inputOpacity);
+            newiSpr->setRotation(rotation);
+            newiSpr->setID("il-input-image"_spr);
+            newiSpr->setUserObject("il-input-path", CCString::create(utils::string::pathToString(inputImage)));
+            newiSpr->setVisible(false);
+            nimage->removeFromParentAndCleanup(true);
+            parent->addChild(newiSpr);
         }
 	});
 }
