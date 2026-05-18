@@ -47,21 +47,21 @@ class $modify(ILUILayer, UILayer) {
         auto mod = Mod::get();
         auto winSize = CCDirector::get()->getWinSize();
 		auto path = mod->getSettingValue<std::filesystem::path>("image");
-		if (path.empty()) return true;
         auto npath = mod->getSettingValue<std::filesystem::path>("input-image");
-        if (npath.empty()) return true;
-		auto normalimage = CCSprite::create(utils::string::pathToString(path).c_str());
-        auto nimage = CCSprite::create(utils::string::pathToString(npath).c_str());
+        if (std::filesystem::exists(path)) {
+		    auto normalimage = CCSprite::create(utils::string::pathToString(path).c_str());
 
-        normalimage->setAnchorPoint({ 0.5f, 0.275f });
-        normalimage->setScale(scale);
-        normalimage->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
-        normalimage->setOpacity((GLubyte)opacity);
-        normalimage->setRotation(rotation);
-        normalimage->setID("il-image"_spr);
-        this->addChild(normalimage);
+            normalimage->setAnchorPoint({ 0.5f, 0.275f });
+            normalimage->setScale(scale);
+            normalimage->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
+            normalimage->setOpacity((GLubyte)opacity);
+            normalimage->setRotation(rotation);
+            normalimage->setID("il-image"_spr);
+            this->addChild(normalimage);
+        }
+        if (std::filesystem::exists(npath) && mod->getSettingValue<bool>("enable-input")) {
+            auto nimage = CCSprite::create(utils::string::pathToString(npath).c_str());
 
-        if (mod->getSettingValue<bool>("enable-input")) {
             nimage->setAnchorPoint({ 0.5f, 0.275f });
 	        nimage->setScale(inputScale);
 	        nimage->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
@@ -71,6 +71,7 @@ class $modify(ILUILayer, UILayer) {
             nimage->setVisible(false);
             this->addChild(nimage);
         }
+
 		return true;
     }
 };
@@ -165,33 +166,37 @@ $on_mod(Loaded) {
         auto currentnPath = static_cast<CCString*>(nimage->getUserObject("il-input-path"));
         if (!currentPath || currentPath->getCString() != utils::string::pathToString(image)) {
             auto parent = normalimage->getParent();
-            auto newSpr = CCSprite::create(utils::string::pathToString(image).c_str());
-            if (!newSpr) return;
-            newSpr->setAnchorPoint({ 0.5f, 0.275f });
-            newSpr->setScale(scale);
-            newSpr->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
-            newSpr->setOpacity((GLubyte)opacity);
-            newSpr->setRotation(rotation);
-            newSpr->setID("il-image"_spr);
-            newSpr->setUserObject("il-path", CCString::create(utils::string::pathToString(image)));
-            normalimage->removeFromParentAndCleanup(true);
-            parent->addChild(newSpr);
+            if (std::filesystem::exists(image)) {
+                auto newSpr = CCSprite::create(utils::string::pathToString(image).c_str());
+                
+                newSpr->setAnchorPoint({ 0.5f, 0.275f });
+                newSpr->setScale(scale);
+                newSpr->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
+                newSpr->setOpacity((GLubyte)opacity);
+                newSpr->setRotation(rotation);
+                newSpr->setID("il-image"_spr);
+                newSpr->setUserObject("il-path", CCString::create(utils::string::pathToString(image)));
+                normalimage->removeFromParentAndCleanup(true);
+                parent->addChild(newSpr);
+            }
         }
 
         if (!currentnPath || currentnPath->getCString() != utils::string::pathToString(inputImage)) {
             auto parent = nimage->getParent();
-            auto newiSpr = CCSprite::create(utils::string::pathToString(inputImage).c_str());
-            if (!newiSpr) return;
-            newiSpr->setAnchorPoint({ 0.5f, 0.275f });
-            newiSpr->setScale(inputScale);
-            newiSpr->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
-            newiSpr->setOpacity((GLubyte)inputOpacity);
-            newiSpr->setRotation(rotation);
-            newiSpr->setID("il-input-image"_spr);
-            newiSpr->setUserObject("il-input-path", CCString::create(utils::string::pathToString(inputImage)));
-            newiSpr->setVisible(false);
-            nimage->removeFromParentAndCleanup(true);
-            parent->addChild(newiSpr);
+            if (std::filesystem::exists(inputImage)) {
+                auto newiSpr = CCSprite::create(utils::string::pathToString(inputImage).c_str());
+                
+                newiSpr->setAnchorPoint({ 0.5f, 0.275f });
+                newiSpr->setScale(inputScale);
+                newiSpr->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
+                newiSpr->setOpacity((GLubyte)inputOpacity);
+                newiSpr->setRotation(rotation);
+                newiSpr->setID("il-input-image"_spr);
+                newiSpr->setUserObject("il-input-path", CCString::create(utils::string::pathToString(inputImage)));
+                newiSpr->setVisible(false);
+                nimage->removeFromParentAndCleanup(true);
+                parent->addChild(newiSpr);
+            }
         }
 	});
 }
