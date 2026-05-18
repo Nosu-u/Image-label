@@ -2,6 +2,7 @@
 #include <Geode/ui/GeodeUI.hpp>
 #include <Geode/modify/UILayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
+#include <Geode/modify/PlayerObject.hpp>
 
 using namespace geode::prelude;
 
@@ -12,6 +13,16 @@ int opacity;
 int rotation;
 std::filesystem::path image;
 
+float inputScale;
+float inputPosx;
+float inputPosy;
+int inputOpacity;
+int inputRotation;
+std::filesystem::path inputImage;
+
+// track if player is holding jump
+static bool s_isHoldingJump = false;
+
 void updateSettings() {
 	auto mod = Mod::get();
 
@@ -21,6 +32,49 @@ void updateSettings() {
     opacity = mod->getSettingValue<int>("opacity");
     rotation = mod->getSettingValue<int>("rotation");
     image = mod->getSettingValue<std::filesystem::path>("image");
+
+    inputScale = mod->getSettingValue<float>("input-scale");
+    inputPosx = mod->getSettingValue<float>("input-posx");
+    inputPosy = mod->getSettingValue<float>("input-posy");
+    inputOpacity = mod->getSettingValue<int>("input-opacity");
+    inputRotation = mod->getSettingValue<int>("input-rotation");
+    inputImage = mod->getSettingValue<std::filesystem::path>("input-image");
+}
+
+void updateImageState() {
+	// check if input image feature is enabled
+	if (!Mod::get()->getSettingValue<bool>("enable-input")) return;
+
+	// check if we have both images configured
+	if (image.empty() || inputImage.empty()) return;
+
+	auto scene = CCDirector::sharedDirector()->getRunningScene();
+	if (!scene) return;
+
+	auto spr = static_cast<CCSprite*>(scene->getChildByIDRecursive("il-image"_spr));
+	if (!spr) return;
+
+	auto winSize = CCDirector::get()->getWinSize();
+	auto wantPath = utils::string::pathToString(s_isHoldingJump ? inputImage : image);
+	float wantScale = s_isHoldingJump ? inputScale : scale;
+	float wantPx = s_isHoldingJump ? inputPosx : posx;
+	float wantPy = s_isHoldingJump ? inputPosy : posy;
+	int wantOpacity = s_isHoldingJump ? inputOpacity : opacity;
+	int wantRotation = s_isHoldingJump ? inputRotation : rotation;
+
+	auto parent = spr->getParent();
+	int zOrder = spr->getZOrder();
+	spr->removeFromParentAndCleanup(true);
+
+	auto newSpr = CCSprite::create(wantPath.c_str());
+	if (!newSpr) return;
+	newSpr->setAnchorPoint({ 0.5f, 0.275f });
+	newSpr->setScale(wantScale);
+	newSpr->setPosition({ (wantPx / 100.f) * winSize.width, (wantPy / 100.f) * winSize.height });
+	newSpr->setOpacity((GLubyte)wantOpacity);
+	newSpr->setRotation(wantRotation);
+	newSpr->setID("il-image"_spr);
+	parent->addChild(newSpr, zOrder);
 }
 
 class $modify(ILUILayer, UILayer) {
@@ -43,6 +97,32 @@ class $modify(ILUILayer, UILayer) {
 
 		return true;
     }
+};
+
+class $modify(ILPlayerObject, PlayerObject) {
+	bool pushButton(PlayerButton btn) {
+		bool result = PlayerObject::pushButton(btn);
+		
+		// only track jump button
+		if (btn == PlayerButton::Jump) {
+			s_isHoldingJump = true;
+			updateImageState();
+		}
+		
+		return result;
+	}
+
+	bool releaseButton(PlayerButton btn) {
+		bool result = PlayerObject::releaseButton(btn);
+		
+		// only track jump button
+		if (btn == PlayerButton::Jump) {
+			s_isHoldingJump = false;
+			updateImageState();
+		}
+		
+		return result;
+	}
 };
 
 class $modify(IL, PauseLayer) {
