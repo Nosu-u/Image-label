@@ -182,7 +182,7 @@ $on_mod(Loaded) {
             if (!newSpr) return;
             newSpr->setAnchorPoint({ 0.5f, 0.275f });
             newSpr->setScale(scale);
-            newSpr->setPosition({ posx, posy });
+            newSpr->setPosition({ (posx / 100.f) * winSize.width, (posy / 100.f) * winSize.height });
             newSpr->setOpacity((GLubyte)opacity);
             newSpr->setRotation(rotation);
             newSpr->setID("il-image"_spr);

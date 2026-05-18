@@ -1,5 +1,6 @@
 # 1.2.0
 - Can customize to another picture when you click! (by [MalikHw47](https://www.youtube.com/@MalikHw47/))
+- Fixed a bug where a new image wouldn't appear on the same position as the old one
 
 # 1.1.0
 - Changed the position system to be percentage based
