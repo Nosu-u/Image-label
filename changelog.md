@@ -1,3 +1,7 @@
+# 1.2.3
+- Fixed a crash when changing the image while not being on a level
+- Fixed a bug where the input image settings wouldn't update correctly
+
 # 1.2.0
 - Added an option to change the image on input (idea by [MalikHw47](https://www.youtube.com/@MalikHw47/))
 - Fixed a bug where a new image wouldn't appear on the same position as the old one

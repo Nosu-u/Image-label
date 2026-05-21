@@ -59,7 +59,7 @@ class $modify(ILUILayer, UILayer) {
             normalimage->setID("il-image"_spr);
             this->addChild(normalimage);
         }
-        if (std::filesystem::exists(npath) && mod->getSettingValue<bool>("enable-input")) {
+        if (std::filesystem::exists(npath)) {
             auto nimage = CCSprite::create(utils::string::pathToString(npath).c_str());
 
             nimage->setAnchorPoint({ 0.5f, 0.275f });
@@ -149,11 +149,14 @@ $on_mod(Loaded) {
 	listenForAllSettingChanges([](std::string_view key, std::shared_ptr<SettingV3> setting) {
 		updateSettings();
 
+        auto pl = PlayLayer::get();
+        if (!pl) return;
+
         auto mod = Mod::get();
         auto winSize = CCDirector::get()->getWinSize();
-        auto normalimage = static_cast<CCSprite*>(PlayLayer::get()->m_uiLayer->getChildByIDRecursive("il-image"_spr));
+        auto normalimage = static_cast<CCSprite*>(pl->m_uiLayer->getChildByIDRecursive("il-image"_spr));
         if (!normalimage) return;
-        auto nimage = static_cast<CCSprite*>(PlayLayer::get()->m_uiLayer->getChildByIDRecursive("il-input-image"_spr));
+        auto nimage = static_cast<CCSprite*>(pl->m_uiLayer->getChildByIDRecursive("il-input-image"_spr));
         if (!nimage) return;
         
         normalimage->setScale(scale);
@@ -161,9 +164,15 @@ $on_mod(Loaded) {
         normalimage->setOpacity((GLubyte)opacity);
         normalimage->setRotation(rotation);
 
+        nimage->setScale(inputScale);
+        nimage->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
+        nimage->setOpacity((GLubyte)inputOpacity);
+        nimage->setRotation(inputRotation);
+
         // handle image swap
         auto currentPath = static_cast<CCString*>(normalimage->getUserObject("il-path"));
         auto currentnPath = static_cast<CCString*>(nimage->getUserObject("il-input-path"));
+        
         if (!currentPath || currentPath->getCString() != utils::string::pathToString(image)) {
             auto parent = normalimage->getParent();
             if (std::filesystem::exists(image)) {
@@ -190,7 +199,7 @@ $on_mod(Loaded) {
                 newiSpr->setScale(inputScale);
                 newiSpr->setPosition({ (inputPosx / 100.f) * winSize.width, (inputPosy / 100.f) * winSize.height });
                 newiSpr->setOpacity((GLubyte)inputOpacity);
-                newiSpr->setRotation(rotation);
+                newiSpr->setRotation(inputRotation);
                 newiSpr->setID("il-input-image"_spr);
                 newiSpr->setUserObject("il-input-path", CCString::create(utils::string::pathToString(inputImage)));
                 newiSpr->setVisible(false);
