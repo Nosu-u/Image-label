@@ -7,13 +7,14 @@ Are you tired of be able to express yourself only with boring text labels? No? U
 
 Well... with this mod you can add whatever image (or GIF) you want to the screen while you're playing, just like you do with labels on mod menus.
 
-You can fully customize the image you want to add on the mod settings btw, just in case you miss it.
+Go to the mod settings to start adding labels!
 
-This mod's so simple that im truly shocked that no one had done this yet ngl, but here we are lol.
+It can get laggy if you add too many (specially with gifs). *USE YOUR BRAIN*
 
 ## Credits
 - ***[Midian-P](https://www.deviantart.com/midian-p/art/Walfas-Custom-Base-Ame-chan-NSO-1138284444) for the Ame-chan drawing that's on the logo, button and image below***
 - ***[MalikHw47](https://www.youtube.com/@MalikHw47/) for the image change on input idea***
+- ***[freyaii1](https://github.com/freyaii1) for the multiple labels idea***
 
 <img src="example.png" width="600" alt="example" />
 

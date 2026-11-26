@@ -1,166 +1,49 @@
 {
-	"geode": "5.7.1",
+	"geode": "6.0.0",
 	"gd": {
-		"win": "2.2081",
-		"android": "2.2081",
-		"mac": "2.2081",
-		"ios": "2.2081"
+		"win": "2.2091",
+		"android": "2.2091",
+		"mac": "2.2091",
+		"ios": "2.2091"
 	},
 	"id": "nosu.image_label",
 	"name": "Image Label",
-	"version": "v1.2.3",
+	"version": "v2.0.0",
 	"developers": ["Nosu"],
-	"description": "Add whatever image you want while playing",
+	"description": "Add whatever images you want while playing",
 	"dependencies": {
 		"geode.node-ids": ">=1.22.0",
 		"prevter.imageplus": {
 			"version": ">=v1.0.0",
-            "required": true
+			"required": true
 		}
 	},
 	"settings": {
-    	"image": {
-    		"name": "Image (gif, png, jpg, jpeg, webp)",
-	    	"description": "Your image. Whatever size or resolution you want",
-	    	"type": "file",
-	    	"default": "Please pick an image file.",
-			"control": {
-        		"dialog": "open",
-        		"filters": [
-            		{
-						"files": ["*.gif", "*.png", "*.jpg", "*.jpeg", "*.webp"],
-						"description": "Image files"
-					}
-				]
-			}
-    	},
-
 		"pbutton": {
-    		"name": "Settings in pause menu",
-	    	"description": "Show a button to change the settings in the pause menu",
-	    	"type": "bool",
-	    	"default": true
-  		},
-
-		"scale": {
-  			"name": "Scale",
-  			"description": "The scale you want your image to be",
-  			"type": "float",
-  			"default": 0.3,
-  			"min": 0.1
-  		},
-
-		"posx": {
-    		"name": "Position (X)",
-    		"description": "Horizontal position. 0% = left border, 100% = right border",
-    		"type": "float",
-    		"min": 0,
-    		"max": 100,
-    		"default": 95
-		},
-		
-		"posy": {
-    		"name": "Position (Y)", 
-    		"description": "Vertical position. 0% = bottom border, 100% = top border",
-    		"type": "float",
-    		"min": 0,
-    		"max": 100,
-    		"default": 80
-		},
-
-		"opacity": {
-  			"name": "Opacity",
-  			"description": "How transparent you want your image to be",
-  			"type": "int",
-  			"default": 150,
-  			"min": 0,
-  			"max": 255
-  		},
-
-		"rotation": {
-  			"name": "Rotation",
-  			"description": "How many degrees you want your image to be rotated",
-  			"type": "int",
-  			"default": 0
-  		},
-
-		"enable-input": {
-			"name": "Enable Input Image",
-			"description": "Show a different image while clicking",
+			"name": "Label editor in pause menu",
+			"description": "Show a button to open the label editor in the pause menu",
 			"type": "bool",
-			"default": false
+			"default": true
 		},
 
-		"input-image": {
-    		"name": "Input Image (gif, png, jpg, jpeg, webp)",
-	    	"description": "Whatever size or resolution you want",
-	    	"type": "file",
-	    	"default": "Please pick an image file.",
-			"control": {
-        		"dialog": "open",
-        		"filters": [
-            		{
-						"files": ["*.gif", "*.png", "*.jpg", "*.jpeg", "*.webp"],
-						"description": "Image files"
-					}
-				]
-			}
-    	},
-
-		"input-scale": {
-  			"name": "Input Scale",
-  			"description": "The scale you want your input image to be",
-  			"type": "float",
-  			"default": 0.3,
-  			"min": 0.1
-  		},
-
-		"input-posx": {
-    		"name": "Input Position (X)",
-    		"description": "Horizontal position. 0% = left border, 100% = right border",
-    		"type": "float",
-    		"min": 0,
-    		"max": 100,
-    		"default": 95
-		},
-		
-		"input-posy": {
-    		"name": "Input Position (Y)", 
-    		"description": "Vertical position. 0% = bottom border, 100% = top border",
-    		"type": "float",
-    		"min": 0,
-    		"max": 100,
-    		"default": 80
-		},
-
-		"input-opacity": {
-  			"name": "Input Opacity",
-  			"description": "How transparent you want your input image to be",
-  			"type": "int",
-  			"default": 150,
-  			"min": 0,
-  			"max": 255
-  		},
-
-		"input-rotation": {
-  			"name": "Input Rotation",
-  			"description": "How many degrees you want your input image to be rotated",
-  			"type": "int",
-  			"default": 0
-  		}
+		"labels-editor": {
+      		"type": "custom:labels-editor",
+      		"name": "Label editor",
+      		"description": "Edit your labels"
+    	}
 	},
 
 	"tags": [
-        "content",
-        "universal",
-        "offline",
+		"content",
+		"universal",
+		"offline",
 		"interface",
 		"customization"
-    ],
+	],
 
 	"links": {
-        "source": "https://github.com/Nosu-u/Image-label"
-    },
+		"source": "https://github.com/Nosu-u/Image-label"
+	},
 
 	"resources": {
 		"sprites": [
